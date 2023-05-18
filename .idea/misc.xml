@@ -4,6 +4,8 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/fatik/AndroidStudioProjects/ChatGPTApi/app/src/main/res/layout/activity_main.xml" value="0.25" />
+        <entry key="..\:/Users/fatik/AndroidStudioProjects/ChatGPTApi/app/src/main/res/layout/fragment_chat.xml" value="0.38333333333333336" />
+        <entry key="..\:/Users/fatik/AndroidStudioProjects/ChatGPTApi/app/src/main/res/layout/message_item.xml" value="0.37083333333333335" />
       </map>
     </option>
   </component>

@@ -7,6 +7,8 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.recyclerview.widget.RecyclerView
+import com.example.chatgptapi.databinding.ActivityMainBinding
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -15,28 +17,50 @@ import org.json.JSONObject
 import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
+
     private val client = OkHttpClient()
+    lateinit var binding:  ActivityMainBinding
+    lateinit var adapter: MessageAdapter
+    lateinit var recyclerView: RecyclerView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding  =  ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         val etQuestion = findViewById<EditText>(R.id.etQuestion)
         val btnSubmit = findViewById<Button>(R.id.btnSubmit)
-        val tvResponse = findViewById<TextView>(R.id.tvResponse)
+        //val tvResponse = findViewById<TextView>(R.id.tvResponse)
+
+        initial()
 
         btnSubmit.setOnClickListener{
             val question = etQuestion.text.toString()
             Toast.makeText(this, question, Toast.LENGTH_SHORT).show()
             getResponse(question){response ->
                 runOnUiThread{
-                    tvResponse.text = response
+                    //tvResponse.text = response
+                    adapter.setList(myMessage(response))
                 }
             }
         }
     }
 
+    private fun initial() {
+        recyclerView  = binding.rvChat
+        adapter = MessageAdapter(this)
+        recyclerView.adapter = adapter
+
+    }
+
+    fun myMessage(msg: String) : ArrayList<String>{
+        val messageList = ArrayList<String>()
+        messageList.add(msg)
+        return messageList
+    }
+
     fun getResponse(question: String, callback: (String) -> Unit){
-        val apiKey = "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"
+        val apiKey = ""
         val url = "https://api.openai.com/v1/completions"
 
         val  requestBody = """
