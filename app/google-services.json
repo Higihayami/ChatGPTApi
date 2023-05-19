@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "686887617920",
+    "firebase_url": "https://chatgptapp-2fb4a-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "chatgptapp-2fb4a",
+    "storage_bucket": "chatgptapp-2fb4a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:686887617920:android:9b14bff5e94a3ee92c2d65",
+        "android_client_info": {
+          "package_name": "com.example.chatgptapi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "686887617920-d35qs4fhueso3isciijrv63m6ijov351.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCM8WLFkqDAqbOCjpWyKxW_Dv8HNU3WOHc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "686887617920-d35qs4fhueso3isciijrv63m6ijov351.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -5,16 +5,19 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
-import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.chatgptapi.databinding.ActivityMainBinding
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -22,6 +25,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var binding:  ActivityMainBinding
     lateinit var adapter: MessageAdapter
     lateinit var recyclerView: RecyclerView
+    private val messageList = ArrayList<MessageModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,7 +34,6 @@ class MainActivity : AppCompatActivity() {
 
         val etQuestion = findViewById<EditText>(R.id.etQuestion)
         val btnSubmit = findViewById<Button>(R.id.btnSubmit)
-        //val tvResponse = findViewById<TextView>(R.id.tvResponse)
 
         initial()
 
@@ -46,6 +49,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun addMessage(msg: MessageModel){
+        val database = Firebase.database
+        val myRef = database.getReference("chat")
+        myRef.child(msg.id.toString()).child("Message").setValue(msg.msg)
+        myRef.child(msg.id.toString()).child("Date").setValue(msg.date)
+    }
+
     private fun initial() {
         recyclerView  = binding.rvChat
         adapter = MessageAdapter(this)
@@ -53,13 +63,17 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    fun myMessage(msg: String) : ArrayList<String>{
-        val messageList = ArrayList<String>()
-        messageList.add(msg)
+    private fun myMessage(msg: String) : ArrayList<MessageModel> {
+        val id = UUID.randomUUID()
+        val dateFormat = SimpleDateFormat("d MMM yyyy, EEE, HH:mm:ss z")
+        val date = dateFormat.format(Date())
+        val message = MessageModel(id, msg, date)
+        messageList.add(message)
+        addMessage(message)
         return messageList
     }
 
-    fun getResponse(question: String, callback: (String) -> Unit){
+    private fun getResponse(question: String, callback: (String) -> Unit){
         val apiKey = ""
         val url = "https://api.openai.com/v1/completions"
 
@@ -71,6 +85,7 @@ class MainActivity : AppCompatActivity() {
             "temperature": 0
             } 
         """.trimIndent()
+
 
         val request = Request.Builder()
             .url(url)

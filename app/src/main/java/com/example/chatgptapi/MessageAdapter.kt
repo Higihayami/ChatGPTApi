@@ -12,7 +12,7 @@ import kotlinx.android.synthetic.main.message_item.view.*
 class MessageAdapter(private val context: Context): RecyclerView.Adapter<MessageAdapter.MessageHolder>() {
 
 
-    private var messageList = emptyList<String>()
+    private var messageList = emptyList<MessageModel>()
     class MessageHolder(item: View): RecyclerView.ViewHolder(item){
 
     }
@@ -23,7 +23,7 @@ class MessageAdapter(private val context: Context): RecyclerView.Adapter<Message
     }
 
     override fun onBindViewHolder(holder: MessageHolder, position: Int) {
-        holder.itemView.tv_message.text = messageList[position]
+        holder.itemView.tv_message.text = messageList[position].msg
     }
 
     override fun getItemCount(): Int {
@@ -31,7 +31,7 @@ class MessageAdapter(private val context: Context): RecyclerView.Adapter<Message
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun setList(list : List<String>){
+    fun setList(list : List<MessageModel>){
         messageList = list
         notifyDataSetChanged()
     }

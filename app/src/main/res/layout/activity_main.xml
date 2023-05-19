@@ -29,10 +29,10 @@
         android:id="@+id/etQuestion"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="Enter text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btnSubmit"
-        app:layout_constraintStart_toStartOf="parent"
-        android:text = "Enter text"/>
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/btnSubmit"
