@@ -1,14 +1,20 @@
 package com.example.chatgptapi
 
+import android.content.ContentValues.TAG
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.chatgptapi.databinding.ActivityMainBinding
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -33,26 +39,54 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val etQuestion = findViewById<EditText>(R.id.etQuestion)
-        val btnSubmit = findViewById<Button>(R.id.btnSubmit)
+        val btnSubmit = findViewById<ImageButton>(R.id.btnSubmit)
 
         initial()
 
+
+
         btnSubmit.setOnClickListener{
             val question = etQuestion.text.toString()
-            Toast.makeText(this, question, Toast.LENGTH_SHORT).show()
-            getResponse(question){response ->
+            etQuestion.setText("")
+            Toast.makeText(this, question.replace("\n", " "), Toast.LENGTH_SHORT).show()
+            getResponse(question.replace("\n", " ")){response ->
                 runOnUiThread{
                     //tvResponse.text = response
-                    adapter.setList(myMessage(response))
+                    adapter.setList(myMessage(response, question.replace("\n", " ")))
                 }
             }
         }
     }
 
+    private fun getValueFireBase(){
+        val database = Firebase.database
+        val myRef = database.getReference("chat")
+            .child("f922d97f-c21a-464e-877a-ffb13e13aa21")
+            .child("Bot")
+
+
+        // Read from the database
+        myRef.addValueEventListener(object: ValueEventListener {
+
+            override fun onDataChange(snapshot: DataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+                val value = snapshot.getValue<String>()
+                Log.d("AAA", "Value is: " + value)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.w(TAG, "Failed to read value.", error.toException())
+            }
+
+        })
+    }
+
     private fun addMessage(msg: MessageModel){
         val database = Firebase.database
         val myRef = database.getReference("chat")
-        myRef.child(msg.id.toString()).child("Message").setValue(msg.msg)
+        myRef.child(msg.id.toString()).child("Bot").setValue(msg.msg)
+        myRef.child(msg.id.toString()).child("Me").setValue(msg.me)
         myRef.child(msg.id.toString()).child("Date").setValue(msg.date)
     }
 
@@ -63,18 +97,18 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun myMessage(msg: String) : ArrayList<MessageModel> {
+    private fun myMessage(response: String, question: String?) : ArrayList<MessageModel> {
         val id = UUID.randomUUID()
-        val dateFormat = SimpleDateFormat("d MMM yyyy, EEE, HH:mm:ss z")
+        val dateFormat = SimpleDateFormat("HH:mm")
         val date = dateFormat.format(Date())
-        val message = MessageModel(id, msg, date)
+        val message = MessageModel(id, response, date, question)
         messageList.add(message)
         addMessage(message)
         return messageList
     }
 
     private fun getResponse(question: String, callback: (String) -> Unit){
-        val apiKey = ""
+        val apiKey = "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"
         val url = "https://api.openai.com/v1/completions"
 
         val  requestBody = """

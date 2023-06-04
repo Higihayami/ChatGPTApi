@@ -5,5 +5,6 @@ import java.util.*
 class MessageModel(
     val id: UUID,
     val msg: String?,
-    val date: String?
+    val date: String?,
+    val me: String?
 )
