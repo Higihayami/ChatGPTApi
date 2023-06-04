@@ -24,6 +24,7 @@ import org.json.JSONObject
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity() {
 
@@ -42,8 +43,7 @@ class MainActivity : AppCompatActivity() {
         val btnSubmit = findViewById<ImageButton>(R.id.btnSubmit)
 
         initial()
-
-
+        getValueFireBase()
 
         btnSubmit.setOnClickListener{
             val question = etQuestion.text.toString()
@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity() {
             getResponse(question.replace("\n", " ")){response ->
                 runOnUiThread{
                     //tvResponse.text = response
-                    adapter.setList(myMessage(response, question.replace("\n", " ")))
+                    myMessage(response, question.replace("\n", " "))
                 }
             }
         }
@@ -61,22 +61,23 @@ class MainActivity : AppCompatActivity() {
     private fun getValueFireBase(){
         val database = Firebase.database
         val myRef = database.getReference("chat")
-            .child("f922d97f-c21a-464e-877a-ffb13e13aa21")
-            .child("Bot")
-
 
         // Read from the database
         myRef.addValueEventListener(object: ValueEventListener {
-
             override fun onDataChange(snapshot: DataSnapshot) {
-                // This method is called once with the initial value and again
-                // whenever data at this location is updated.
-                val value = snapshot.getValue<String>()
-                Log.d("AAA", "Value is: " + value)
+                val list  = ArrayList<MessageModel>()
+                for(s in snapshot.children){
+                    val message = s.getValue(MessageModel::class.java)
+                    if(message != null){
+                        list.add(message)
+                        Log.d("AAA", "Value is: " + message.date)
+                    }
+                }
+                adapter.setList(list)
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Log.w(TAG, "Failed to read value.", error.toException())
+
             }
 
         })
@@ -85,30 +86,26 @@ class MainActivity : AppCompatActivity() {
     private fun addMessage(msg: MessageModel){
         val database = Firebase.database
         val myRef = database.getReference("chat")
-        myRef.child(msg.id.toString()).child("Bot").setValue(msg.msg)
-        myRef.child(msg.id.toString()).child("Me").setValue(msg.me)
-        myRef.child(msg.id.toString()).child("Date").setValue(msg.date)
+        myRef.child(myRef.push().key ?: "blabla").setValue(msg)
     }
 
     private fun initial() {
         recyclerView  = binding.rvChat
         adapter = MessageAdapter(this)
         recyclerView.adapter = adapter
-
     }
 
-    private fun myMessage(response: String, question: String?) : ArrayList<MessageModel> {
-        val id = UUID.randomUUID()
+    private fun myMessage(response: String, question: String?)  {
         val dateFormat = SimpleDateFormat("HH:mm")
         val date = dateFormat.format(Date())
-        val message = MessageModel(id, response, date, question)
+        val message = MessageModel( response, date, question)
         messageList.add(message)
         addMessage(message)
-        return messageList
+        getValueFireBase()
     }
 
     private fun getResponse(question: String, callback: (String) -> Unit){
-        val apiKey = "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"
+        val apiKey = ""
         val url = "https://api.openai.com/v1/completions"
 
         val  requestBody = """

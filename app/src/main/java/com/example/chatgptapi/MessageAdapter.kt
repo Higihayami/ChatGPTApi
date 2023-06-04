@@ -7,8 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.message_item.view.*
-import java.text.SimpleDateFormat
-import java.util.*
 
 
 class MessageAdapter(private val context: Context): RecyclerView.Adapter<MessageAdapter.MessageHolder>() {
@@ -25,7 +23,7 @@ class MessageAdapter(private val context: Context): RecyclerView.Adapter<Message
     }
 
     override fun onBindViewHolder(holder: MessageHolder, position: Int) {
-        holder.itemView.tv_message_bot.text = messageList[position].msg
+        holder.itemView.tv_message_bot.text = messageList[position].response
         holder.itemView.tv_message_user.text = messageList[position].me
         holder.itemView.tv_time_bot.text = messageList[position].date
         holder.itemView.tv_time_user.text = messageList[position].date
